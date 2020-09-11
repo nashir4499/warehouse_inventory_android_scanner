@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {StyleSheet, Text, View, Alert, DevSettings} from 'react-native';
 import Axios from 'axios';
 import {TouchableOpacity, TextInput} from 'react-native-gesture-handler';
+import {url} from '../../service/config';
 
 const JumlahKeluar = ({navigation, route}) => {
   const [semua, setSemua] = useState(false);
@@ -14,7 +15,7 @@ const JumlahKeluar = ({navigation, route}) => {
   }, []);
   const [isiRak, setIsiRak] = useState({
     id: '',
-    stock: '',
+    stok: '',
     rak_id: '',
     barang_id: '',
     barang: {},
@@ -22,13 +23,13 @@ const JumlahKeluar = ({navigation, route}) => {
   });
 
   const getIsirak = () => {
-    Axios.get(`http://192.168.100.8:3333/rakterpakai/${route.params.id}`, {
+    Axios.get(`${url}/rakterpakai/${route.params.id}`, {
       headers: token,
     })
       .then((res) => {
         setIsiRak({
           id: res.data.id,
-          stock: res.data.stock,
+          stok: res.data.stok,
           rak_id: res.data.rak_id,
           barang_id: res.data.barang_id,
           barang: res.data.barang,
@@ -41,11 +42,11 @@ const JumlahKeluar = ({navigation, route}) => {
   };
 
   const handleKeluarSemua = () => {
-    // console.log(isiRak.rak.stock_max + isiRak.stock)
+    // console.log(isiRak.rak.stok_max + isiRak.stok)
     Axios.post(
-      'http://192.168.100.8:3333/bkeluar',
+      `${url}/bkeluar`,
       {
-        stock_bk: isiRak.stock,
+        stok_bk: isiRak.stok,
         deskripsi: 'Barang Keluar',
         barang_id: isiRak.barang_id,
       },
@@ -58,11 +59,11 @@ const JumlahKeluar = ({navigation, route}) => {
         console.log(err);
       });
     Axios.post(
-      `http://192.168.100.8:3333/rak/${isiRak.rak_id}`,
+      `${url}/rak/${isiRak.rak_id}`,
       {
         id: isiRak.rak.id,
         nama: isiRak.rak.nama,
-        stock_max: isiRak.rak.stock_max + isiRak.stock,
+        stok_max: isiRak.rak.stok_max + isiRak.stok,
       },
       {headers: token},
     )
@@ -72,7 +73,7 @@ const JumlahKeluar = ({navigation, route}) => {
       .catch((err) => {
         console.log(err);
       });
-    Axios.delete(`http://192.168.100.8:3333/rakterpakai/${isiRak.id}`, {
+    Axios.delete(`${url}/rakterpakai/${isiRak.id}`, {
       headers: token,
     }) //pake bactrik kalo mau ngirim parameter
       .then((response) => {
@@ -102,7 +103,7 @@ const JumlahKeluar = ({navigation, route}) => {
 
   const handleSebagian = () => {
     console.log(jumlah);
-    if (jumlah < isiRak.stock && jumlah > 0) {
+    if (jumlah < isiRak.stok && jumlah > 0) {
       Alert.alert(
         'Confirm',
         `Keluarkan ${jumlah} buah ${isiRak.barang.produk}?`,
@@ -116,7 +117,7 @@ const JumlahKeluar = ({navigation, route}) => {
         ],
         {cancelable: false},
       );
-    } else if (jumlah === isiRak.stock) {
+    } else if (jumlah === isiRak.stok) {
       Alert.alert('Gagal', 'Silahkan pilih menu keluar "semua"');
     } else if (jumlah < 1) {
       Alert.alert('Gagal', 'Jumlah yang anda masukkan tidak sesuai');
@@ -126,11 +127,11 @@ const JumlahKeluar = ({navigation, route}) => {
   };
 
   const sebagian = () => {
-    // console.log(res.data.rak.stock_max + res.data.stock)
+    // console.log(res.data.rak.stok_max + res.data.stok)
     Axios.post(
-      'http://192.168.100.8:3333/bkeluar',
+      `${url}/bkeluar`,
       {
-        stock_bk: parseInt(jumlah, 10),
+        stok_bk: parseInt(jumlah, 10),
         deskripsi: 'Barang Keluar',
         barang_id: isiRak.barang_id,
       },
@@ -143,11 +144,11 @@ const JumlahKeluar = ({navigation, route}) => {
         console.log(err);
       });
     Axios.post(
-      `http://192.168.100.8:3333/rak/${isiRak.rak_id}`,
+      `${url}/rak/${isiRak.rak_id}`,
       {
         id: isiRak.rak.id,
         nama: isiRak.rak.nama,
-        stock_max: isiRak.rak.stock_max + parseInt(jumlah, 10),
+        stok_max: isiRak.rak.stok_max + parseInt(jumlah, 10),
       },
       {headers: token},
     )
@@ -158,10 +159,10 @@ const JumlahKeluar = ({navigation, route}) => {
         console.log(err);
       });
     Axios.post(
-      `http://192.168.100.8:3333/rakterpakai/${isiRak.id}`,
+      `${url}/rakterpakai/${isiRak.id}`,
       {
         id: isiRak.id,
-        stock: isiRak.stock - parseInt(jumlah, 10),
+        stok: isiRak.stok - parseInt(jumlah, 10),
         rak_id: isiRak.rak_id,
         barang_id: isiRak.barang_id,
       },
@@ -190,7 +191,7 @@ const JumlahKeluar = ({navigation, route}) => {
         {isiRak.barang.produk} dari rak {isiRak.rak.nama}
       </Text>
       <Text style={styles.textItem}>
-        stok yang ada {isiRak.stock}. Pilih jumlah yang akan dikeluarkan
+        stok yang ada {isiRak.stok}. Pilih jumlah yang akan dikeluarkan
       </Text>
       <View style={styles.buttonLayout}>
         <Btn nama="Semua" tekan={() => setSemua(true)} />

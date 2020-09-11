@@ -3,6 +3,7 @@ import {StyleSheet, Text, View, DevSettings, Alert} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-community/async-storage';
 import Axios from 'axios';
+import {url} from '../../service/config';
 
 const Home = ({navigation}) => {
   const [tokenUser, setTokenUser] = useState();
@@ -21,7 +22,7 @@ const Home = ({navigation}) => {
   }, []);
 
   const checkUser = () => {
-    Axios.get('http://192.168.100.8:3333/api/api/profile', {
+    Axios.get(`${url}/api/api/profile`, {
       headers: token,
     })
       .then((res) => {

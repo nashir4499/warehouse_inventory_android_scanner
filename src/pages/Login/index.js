@@ -9,13 +9,14 @@ import {
 } from 'react-native';
 import Axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
+import {url} from '../../service/config';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const login = () => {
-    Axios.post('http://192.168.100.8:3333/api/api/login', {
+    Axios.post(`${url}/api/api/login`, {
       email: email,
       password: password,
     })

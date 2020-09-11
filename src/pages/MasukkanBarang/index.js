@@ -5,23 +5,37 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {RNCamera} from 'react-native-camera';
 import Axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
+import {url} from '../../service/config';
 
 const MasukkanBarang = ({navigation, route}) => {
+  const [raks, setRaks] = useState([]);
+  const [barangs, setBarangs] = useState([]);
   const [rak, setRak] = useState({
     id: '',
     nama: '',
-    stock_max: '',
+    volume_rak: '',
+    panjang: '',
+    lebar: '',
+    tinggi: '',
   });
   const [barang, setBarang] = useState({
     id: '',
     produk: '',
     suplier_id: '',
     kategori_id: '',
-    stock: '',
+    stok: '',
+    volume_barang: '',
+    panjang: '',
+    lebar: '',
+    tinggi: '',
     deskripsi: '',
   });
 
-  const [barcodeRak, setBarcodeRak] = useState(true);
+  const [pilihRak, setPilihRak] = useState({
+    language: 'rak',
+  });
+
+  const [barcodeBarang, setBarcodeBarang] = useState(true);
 
   const token = {Authorization: 'Bearer ' + route.params.token};
 
@@ -29,7 +43,7 @@ const MasukkanBarang = ({navigation, route}) => {
     // console.log(e);
     // setRak(e.data);
     // const token = route.params.token;
-    Axios.get(`http://192.168.100.8:3333/rak/${e.data}`, {
+    Axios.get(`${url}/rak/${e.data}`, {
       headers: token,
     })
       .then((res) => {
@@ -37,21 +51,24 @@ const MasukkanBarang = ({navigation, route}) => {
         setRak({
           id: res.data.id,
           nama: res.data.nama,
-          stock_max: res.data.stock_max,
+          volume_rak: res.data.volume_rak,
+          panjang: res.data.panjang,
+          lebar: res.data.lebar,
+          tinggi: res.data.tinggi,
         });
-        setBarcodeRak(false);
+        setBarcodeBarang(false);
       })
       .catch((err) => {
         console.log(err);
       });
     // Linking.openURL(e.data).catch((err) =>
     // Linking.openURL(
-    //   `http://192.168.100.8:3333/rakAndro/${e.data}`,
+    //   `url/rakAndro/${e.data}`,
     // ).catch((err) => console.error('An error occured', err));
   };
 
   const scanBarang = (e) => {
-    Axios.get(`http://192.168.100.8:3333/barang/${e.data}`, {
+    Axios.get(`${url}/barang/${e.data}`, {
       headers: token,
     })
       .then((res) => {
@@ -61,10 +78,28 @@ const MasukkanBarang = ({navigation, route}) => {
           produk: res.data.produk,
           suplier_id: res.data.suplier_id,
           kategori_id: res.data.kategori_id,
-          stock: res.data.stock,
+          stok: res.data.stok,
+          volume_barang: res.data.volume_barang,
+          panjang: res.data.panjang,
+          lebar: res.data.lebar,
+          tinggi: res.data.tinggi,
           deskripsi: res.data.deskripsi,
         });
-        setBarcodeRak(true);
+        setBarcodeBarang(true);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    Axios.get(`${url}/rak`, {headers: token})
+      .then((res) => {
+        setRaks(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    Axios.get(`${url}/barang`, {headers: token})
+      .then((res) => {
+        setBarangs(res.data);
       })
       .catch((err) => {
         console.log(err);
@@ -92,20 +127,66 @@ const MasukkanBarang = ({navigation, route}) => {
     );
   };
 
+  const Dropdown = () => {
+    return (
+      // <Picker
+      //   selectedValue={pilihRak.language}
+      //   style={{height: 50, width: 100}}
+      //   onValueChange={(itemValue, itemIndex) =>
+      //     setPilihRak({language: itemValue})
+      //   }>
+      //   {raks &&
+      //     raks.map((rakbisa) => {
+      //       for (var i = 0; i < barangs.length; i++) {
+      //         const modulus = rakbisa.volume_rak % barang.volume_barang;
+      //         if (modulus === 0 || modulus % barangs[i].volume_barang === 0) {
+      //           return (
+      //             // <option key={rakbisa.id} value={rakbisa.id}>
+      //             //   {rakbisa.nama} || {rakbisa.volume_rak}cm3
+      //             // </option>
+      //             <Picker.Item
+      //               key={rakbisa.id}
+      //               label={`${rakbisa.nama} || ${rakbisa.volume_rak}cm3`}
+      //               value={rakbisa.id}
+      //             />
+      //           );
+      //         }
+      //       }
+      //     })}
+      // </Picker>
+      <View>asd</View>
+      // <RNPickerSelect
+      //   onValueChange={(value) => console.log(value)}
+      //   items={[
+      //     {label: 'Football', value: 'football'},
+      //     {label: 'Baseball', value: 'baseball'},
+      //     {label: 'Hockey', value: 'hockey'},
+      //   ]}
+      // />
+    );
+  };
+
   const simpanBarang = () => {
-    if (rak.stock_max > 0 && barang.stock > 0) {
-      // const stok = rak.stock_max - pilihBM.stock_bm;
-      const currantStockRak = rak.stock_max - barang.stock;
-      console.log(currantStockRak);
-      if (currantStockRak < 0) {
-        const stockfix = Math.abs(currantStockRak);
-        console.log(stockfix);
+    if (rak.volume_rak > 0 && barang.stok > 0) {
+      // const stok = rak.volume_rak - pilihBM.stok_bm;
+      const jmlBM = rak.volume_rak / barang.volume_barang;
+      const jmlVB = barang.volume_barang * barang.stok;
+      const stokBnR = Math.floor(jmlBM) - barang.stok;
+      console.log(stokBnR);
+      if (stokBnR < 0) {
+        const stokfix = Math.abs(stokBnR);
+        console.log(stokfix);
+        const volumeMasuk = (barang.stok - stokfix) * barang.volume_barang;
+        const rakVSisa = rak.volume_rak % barang.volume_barang;
         Axios.post(
-          `http://192.168.100.8:3333/rak/${rak.id}`,
+          `${url}/rak/${rak.id}`,
           {
             id: rak.id,
             nama: rak.nama,
-            stock_max: 0,
+            volume_rak: rakVSisa,
+            panjang: rak.panjang,
+            lebar: rak.lebar,
+            tinggi: rak.tinggi,
           },
           {headers: token},
         )
@@ -121,13 +202,17 @@ const MasukkanBarang = ({navigation, route}) => {
             console.log(err);
           });
         Axios.post(
-          `http://192.168.100.8:3333/barang/${barang.id}`,
+          `${url}/barang/${barang.id}`,
           {
             id: barang.id,
             produk: barang.produk,
             suplier_id: barang.suplier_id,
             kategori_id: barang.kategori_id,
-            stock: stockfix,
+            stok: stokfix,
+            volume_barang: barang.volume_barang,
+            panjang: barang.panjang,
+            lebar: barang.lebar,
+            tinggi: barang.tinggi,
             deskripsi: barang.deskripsi,
           },
           {headers: token},
@@ -145,9 +230,10 @@ const MasukkanBarang = ({navigation, route}) => {
           });
 
         Axios.post(
-          'http://192.168.100.8:3333/rakterpakai',
+          `${url}/rakterpakai`,
           {
-            stock: barang.stock - stockfix,
+            stok: barang.stok - stokfix,
+            volume_terpakai: volumeMasuk,
             rak_id: rak.id,
             barang_id: barang.id,
           },
@@ -165,9 +251,9 @@ const MasukkanBarang = ({navigation, route}) => {
             console.log(err);
           });
         Axios.post(
-          'http://192.168.100.8:3333/bmasuk',
+          `${url}/bmasuk`,
           {
-            stock_bm: barang.stock - stockfix,
+            stok_bm: barang.stok - stokfix,
             deskripsi: 'Ditambahkan',
             barang_id: barang.id,
           },
@@ -187,11 +273,14 @@ const MasukkanBarang = ({navigation, route}) => {
           });
       } else {
         Axios.post(
-          `http://192.168.100.8:3333/rak/${rak.id}`,
+          `${url}/rak/${rak.id}`,
           {
             id: rak.id,
             nama: rak.nama,
-            stock_max: rak.stock_max - barang.stock,
+            volume_rak: rak.volume_rak - jmlVB,
+            panjang: rak.panjang,
+            lebar: rak.lebar,
+            tinggi: rak.tinggi,
           },
           {headers: token},
         )
@@ -207,13 +296,17 @@ const MasukkanBarang = ({navigation, route}) => {
             console.log(err);
           });
         Axios.post(
-          `http://192.168.100.8:3333/barang/${barang.id}`,
+          `${url}/barang/${barang.id}`,
           {
             id: barang.id,
             produk: barang.produk,
             suplier_id: barang.suplier_id,
             kategori_id: barang.kategori_id,
-            stock: 0,
+            stok: 0,
+            volume_barang: barang.volume_barang,
+            panjang: barang.panjang,
+            lebar: barang.lebar,
+            tinggi: barang.tinggi,
             deskripsi: barang.deskripsi,
           },
           {headers: token},
@@ -231,9 +324,10 @@ const MasukkanBarang = ({navigation, route}) => {
           });
 
         Axios.post(
-          'http://192.168.100.8:3333/rakterpakai',
+          `${url}/rakterpakai`,
           {
-            stock: barang.stock,
+            stok: barang.stok,
+            volume_terpakai: jmlVB,
             rak_id: rak.id,
             barang_id: barang.id,
           },
@@ -251,9 +345,9 @@ const MasukkanBarang = ({navigation, route}) => {
             console.log(err);
           });
         Axios.post(
-          'http://192.168.100.8:3333/bmasuk',
+          `${url}/bmasuk`,
           {
-            stock_bm: barang.stock,
+            stok_bm: barang.stok,
             deskripsi: 'Ditambahkan',
             barang_id: barang.id,
           },
@@ -280,25 +374,29 @@ const MasukkanBarang = ({navigation, route}) => {
   return (
     <View style={styles.container}>
       <View style={styles.buttonLayout}>
-        <Btn nama="Rak" tekan={() => setBarcodeRak(true)} />
-        <Btn nama="Barang" tekan={() => setBarcodeRak(false)} />
+        <Btn nama="Rak" tekan={() => setBarcodeBarang(true)} />
+        <Btn nama="Barang" tekan={() => setBarcodeBarang(false)} />
       </View>
-      {barcodeRak ? (
-        <Qcode nama="Rak" scan={scanRak} />
-      ) : (
+      {barcodeBarang ? (
         <Qcode nama="Barang" scan={scanBarang} />
+      ) : (
+        <Qcode nama="Rak" scan={scanRak} />
       )}
-      <View>
-        <Text style={styles.textItemTitle}>Rak</Text>
-        <Text style={styles.textItem}>
-          |ID: {rak.id} | - | Nama: {rak.nama} | - | Stock: {rak.stock_max} |
-        </Text>
-      </View>
       <View>
         <Text style={styles.textItemTitle}>Barang</Text>
         <Text style={styles.textItem}>
-          |ID: {barang.id} | - | Produk: {barang.produk} | - | Stock:{' '}
-          {barang.stock} |
+          |ID: {barang.id} | - | Produk: {barang.produk} | - | stok:{' '}
+          {barang.stok} |
+        </Text>
+      </View>
+      <View>
+        <Text style={styles.textItemTitle}>Rak Yang Kosong</Text>
+        <Dropdown />
+      </View>
+      <View>
+        <Text style={styles.textItemTitle}>Rak</Text>
+        <Text style={styles.textItem}>
+          |ID: {rak.id} | - | Nama: {rak.nama} | - | stok: {rak.volume_rak} |
         </Text>
       </View>
       <View style={styles.buttonLayoutBawah}>

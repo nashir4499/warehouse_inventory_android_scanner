@@ -5,6 +5,7 @@ import {TouchableOpacity, ScrollView} from 'react-native-gesture-handler';
 import {RNCamera} from 'react-native-camera';
 import Axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
+import {url} from '../../service/config';
 
 const KeluarkanBarang = ({navigation, route}) => {
   const [rakIsis, setRakIsis] = useState([]);
@@ -26,7 +27,7 @@ const KeluarkanBarang = ({navigation, route}) => {
     setBarangId(e.data);
     setBarcodeRak(true);
     // if (barangId !== '' && rakId !== '') {
-    //   Axios.get(`http://192.168.100.8:3333/rakterpakai/${rakId}/${barangId}`, {
+    //   Axios.get(`url/rakterpakai/${rakId}/${barangId}`, {
     //     headers: token,
     //   })
     //     .then((res) => {
@@ -41,7 +42,7 @@ const KeluarkanBarang = ({navigation, route}) => {
 
   const cekItem = () => {
     console.log('Oke');
-    Axios.get(`http://192.168.100.8:3333/rakterpakai/${rakId}/${barangId}`, {
+    Axios.get(`${url}/rakterpakai/${rakId}/${barangId}`, {
       headers: token,
     })
       .then((res) => {
@@ -106,7 +107,7 @@ const KeluarkanBarang = ({navigation, route}) => {
                   })
                 }>
                 <Text style={styles.buttonText}>
-                  {rakisi.barang.produk}||{rakisi.rak.nama}||{rakisi.stock}
+                  {rakisi.barang.produk}||{rakisi.rak.nama}||{rakisi.stok}
                 </Text>
                 <Text style={styles.buttonText}>
                   Tanggal Masuk : {rakisi.created_at}
