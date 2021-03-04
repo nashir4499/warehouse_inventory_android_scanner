@@ -16,6 +16,7 @@ const JumlahKeluar = ({navigation, route}) => {
   const [isiRak, setIsiRak] = useState({
     id: '',
     stok: '',
+    volume_terpakai: '',
     rak_id: '',
     barang_id: '',
     barang: {},
@@ -30,6 +31,7 @@ const JumlahKeluar = ({navigation, route}) => {
         setIsiRak({
           id: res.data.id,
           stok: res.data.stok,
+          volume_terpakai: res.data.volume_terpakai,
           rak_id: res.data.rak_id,
           barang_id: res.data.barang_id,
           barang: res.data.barang,
@@ -63,7 +65,10 @@ const JumlahKeluar = ({navigation, route}) => {
       {
         id: isiRak.rak.id,
         nama: isiRak.rak.nama,
-        stok_max: isiRak.rak.stok_max + isiRak.stok,
+        volume_rak: isiRak.rak.volume_rak + isiRak.volume_terpakai,
+        panjang: isiRak.rak.panjang,
+        lebar: isiRak.rak.lebar,
+        tinggi: isiRak.rak.tinggi,
       },
       {headers: token},
     )
@@ -128,6 +133,7 @@ const JumlahKeluar = ({navigation, route}) => {
 
   const sebagian = () => {
     // console.log(res.data.rak.stok_max + res.data.stok)
+    const volumeKeluar = isiRak.barang.volume_barang * jumlah;
     Axios.post(
       `${url}/bkeluar`,
       {
@@ -148,7 +154,10 @@ const JumlahKeluar = ({navigation, route}) => {
       {
         id: isiRak.rak.id,
         nama: isiRak.rak.nama,
-        stok_max: isiRak.rak.stok_max + parseInt(jumlah, 10),
+        volume_rak: isiRak.rak.volume_rak + volumeKeluar,
+        panjang: isiRak.rak.panjang,
+        lebar: isiRak.rak.lebar,
+        tinggi: isiRak.rak.tinggi,
       },
       {headers: token},
     )
@@ -163,6 +172,7 @@ const JumlahKeluar = ({navigation, route}) => {
       {
         id: isiRak.id,
         stok: isiRak.stok - parseInt(jumlah, 10),
+        volume_terpakai: isiRak.volume_terpakai - volumeKeluar,
         rak_id: isiRak.rak_id,
         barang_id: isiRak.barang_id,
       },

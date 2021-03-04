@@ -92,8 +92,8 @@ const KeluarkanBarang = ({navigation, route}) => {
           </Text>
         )}
       </View>
-      <View style={styles.buttonLayoutBawah}>
-        {/* <ScrollView style={styles.scrollLayoutBawah}> */}
+      {/* <View style={styles.buttonLayoutBawah}> */}
+      <ScrollView style={styles.scrollLayoutBawah}>
         {rakIsis &&
           rakIsis.map((rakisi) => {
             return (
@@ -115,8 +115,8 @@ const KeluarkanBarang = ({navigation, route}) => {
               </TouchableOpacity>
             );
           })}
-        {/* </ScrollView> */}
-      </View>
+      </ScrollView>
+      {/* </View> */}
     </View>
   );
 };
@@ -172,7 +172,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   scrollLayoutBawah: {
-    flexDirection: 'row',
+    alignSelf: 'center',
+    marginTop: 10,
+    maxHeight: 150,
   },
   buttonWrapper: {
     backgroundColor: '#1c313a',

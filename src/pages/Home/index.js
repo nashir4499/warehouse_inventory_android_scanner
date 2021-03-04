@@ -21,12 +21,13 @@ const Home = ({navigation}) => {
     checkUser();
   }, []);
 
+  // console.log(url);
   const checkUser = () => {
     Axios.get(`${url}/api/api/profile`, {
       headers: token,
     })
       .then((res) => {
-        // console.log(res.data);
+        console.log(res.data);
         setUser(res.data);
       })
       .catch((err) => {
